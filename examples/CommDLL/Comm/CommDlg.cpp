@@ -140,7 +140,7 @@ BOOL CCommDlg::OnInitDialog()
 
 	m_Send.SetWindowText(_T("http://blog.csdn.net/itas109"));
 
-	m_SerialPort.readReady.connect(this, &CCommDlg::OnReceive);
+	m_SerialPort.readReady = std::bind(&CCommDlg::OnReceive, this);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

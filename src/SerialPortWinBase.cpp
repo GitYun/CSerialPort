@@ -358,7 +358,7 @@ unsigned int __stdcall CSerialPortWinBase::commThreadMonitor(LPVOID pParam)
                     ClearCommError(m_mainHandle, &dwError, &comstat);
                     if (comstat.cbInQue >= p_base->getMinByteReadNotify()) //设定字符数,默认为2
                     {
-                        p_base->readReady._emit();
+                        p_base->readReady();
                     }
                 }
 

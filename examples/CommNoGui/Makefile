@@ -7,12 +7,12 @@ INC_DIR= -I${SRC_DIR}
 
 
 SRC =   ${DEMO_DIR}/CSerialPortDemoNoGui.cpp \
-        ${SRC_DIR}/SerialPortInfo.cpp \
-	${SRC_DIR}/SerialPortInfoBase.cpp \
-      	${SRC_DIR}/SerialPortInfoUnixBase.cpp \
-	${SRC_DIR}/SerialPort.cpp \
-	${SRC_DIR}/SerialPortBase.cpp \
-	${SRC_DIR}/SerialPortUnixBase.cpp \
+    #     ${SRC_DIR}/SerialPortInfo.cpp \
+	# ${SRC_DIR}/SerialPortInfoBase.cpp \
+    #   	${SRC_DIR}/SerialPortInfoUnixBase.cpp \
+	# ${SRC_DIR}/SerialPort.cpp \
+	# ${SRC_DIR}/SerialPortBase.cpp \
+	# ${SRC_DIR}/SerialPortUnixBase.cpp \
 
 OBJ = ${SRC}
 

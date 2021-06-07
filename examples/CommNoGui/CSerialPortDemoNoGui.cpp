@@ -21,7 +21,7 @@ int countRead = 0;
 //g++ CSerialPortDemoNoGui.cpp SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -lpthread -o CSerialPortDemoNoGui
 //g++ CSerialPortDemoNoGui.cpp SerialPortInfo.cpp SerialPortInfoBase.cpp SerialPortInfoUnixBase.cpp SerialPort.cpp SerialPortBase.cpp SerialPortUnixBase.cpp -lpthread -o CSerialPortDemoNoGui
 
-class mySlot : public has_slots<>
+class mySlot
 {
 public:
     mySlot(CSerialPort * sp)
@@ -122,7 +122,7 @@ int main()
 		}		
 
 		//connect for read
-		sp.readReady.connect(&receive, &mySlot::OnSendMessage);
+		sp.readReady = std::bind(&mySlot::OnSendMessage, &receive);
 
 		//write
 		sp.writeData("itas109", 7);

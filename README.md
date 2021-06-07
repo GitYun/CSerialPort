@@ -17,6 +17,7 @@
 语言：<a href="README-EN.md">English</a> / <strong>中文</strong>
 </p>
 
+#### 此库移除了**sigslot.h**, 使用**std::function**代替, 使用见**example**目录
 基于C++的轻量级开源跨平台串口类库，可以轻松实现跨平台多操作系统的串口读写
 
 ---

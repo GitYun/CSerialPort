@@ -36,7 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->comboBoxPortName->insertItem(i,QString::fromLocal8Bit(portNameList[i].portName.c_str()));
     }
 
-    m_SerialPort.readReady.connect(this, &MainWindow::OnReceive);
+    m_SerialPort.readReady = std::bind(&MainWindow::OnReceive, this);
+    
 
     ui->comboBoxBaudrate->setCurrentText("9600");
     ui->comboBoxDataBit->setCurrentText("8");

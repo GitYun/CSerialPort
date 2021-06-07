@@ -19,8 +19,7 @@
 #include "SerialPort_global.h"
 #include <string>
 
-#include "sigslot.h"
-using namespace sigslot;
+#include <functional>
 
 class CSerialPortBase;
 
@@ -30,7 +29,7 @@ namespace itas109
  * @brief the CSerialPort class 串口类库
  * @see reference 引用 CSerialPortBase
  */
-class DLL_EXPORT CSerialPort : public has_slots<>
+class DLL_EXPORT CSerialPort
 {
 public:
     /**
@@ -290,7 +289,7 @@ public:
 
 public:
     void onReadReady();
-    sigslot::signal0<> readReady; // sigslot
+    std::function<void(void)> readReady;
 
 private:
     CSerialPortBase *p_serialPortBase;

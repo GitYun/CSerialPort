@@ -29,9 +29,7 @@
 // https://digilander.libero.it/robang/rubrica/serial.htm
 // https://blog.csdn.net/u014650722/article/details/51610587
 
-// sigslot
-// https://sourceforge.net/p/sigslot/bugs/8/
-#include "sigslot.h"
+#include <functional>
 
 // https://blog.csdn.net/u010317005/article/details/52384890
 
@@ -398,7 +396,7 @@ private:
     bool stopThreadMonitor();
 
 public:
-    sigslot::signal0<> readReady; ///< sigslot for read 读数据信号
+    std::function<void(void)> readReady; ///< callback for read 读数据回调
 
 private:
     std::string m_portName;

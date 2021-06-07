@@ -232,7 +232,7 @@ void *CSerialPortUnixBase::commThreadMonitor(void *pParam)
             ioctl(p_base->fd, FIONREAD, &readbytes);
             if (readbytes >= p_base->getMinByteReadNotify()) //设定字符数，默认为2
             {
-                p_base->readReady._emit();
+                p_base->readReady();
             }
             else
             {

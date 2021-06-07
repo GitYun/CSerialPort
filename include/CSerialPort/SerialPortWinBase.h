@@ -22,8 +22,7 @@
 #include <tchar.h>   //tchar
 #include <windows.h>
 
-// sigslot
-#include "sigslot.h"
+#include <functional>
 
 /**
  * @brief the CSerialPort Windows Base class windows串口基类
@@ -354,7 +353,7 @@ private:
     bool stopThreadMonitor();
 
 public:
-    sigslot::signal0<> readReady; ///< sigslot for read 读数据信号
+    std::function<void(void)> readReady; ///< callback for read 读数据回调
 
 private:
     std::string m_portName;

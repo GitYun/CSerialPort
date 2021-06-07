@@ -37,7 +37,6 @@ update : 2020-10-05
     |       |-- SerialPortWinBase.h # CSerialPort Windows Base class windows串口基类 
     |       |-- SerialPort_global.h # Global difine of CSerialPort 串口全局定义 
     |       |-- osplatformutil.h # os platform define 操作系统定义
-    |       |-- sigslot.h # signal and slot 信号与槽
     |-- lib # lib 库目录
     |   |-- CMakeLists.txt # CSerialPort library cmake file [recommend]
     |   |-- Linux # windows lib windows库目录

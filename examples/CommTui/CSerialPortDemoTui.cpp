@@ -231,7 +231,7 @@ void open(void)
 		// std::cout << "open success" << std::endl;
 
         //connect for read
-        m_serialPort.readReady.connect(&receive, &mySlot::OnSendMessage);
+        m_serialPort.readReady = std::bind(&mySlot::OnSendMessage, &receive);
 	}
 	else
 	{
