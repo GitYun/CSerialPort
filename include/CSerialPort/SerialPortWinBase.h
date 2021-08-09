@@ -375,6 +375,7 @@ private:
 
     COMMCONFIG m_comConfigure;
     COMMTIMEOUTS m_comTimeout;
+    COMMTIMEOUTS m_originalTimeout;
 
     CRITICAL_SECTION m_communicationMutex; ///< mutex
 

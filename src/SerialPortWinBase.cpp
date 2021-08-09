@@ -113,6 +113,8 @@ bool CSerialPortWinBase::openPort()
 
         if (m_handle != INVALID_HANDLE_VALUE)
         {
+            SetupComm(m_handle, m_readBufferSize, 2048);
+
             // get default parameter
             GetCommConfig(m_handle, &m_comConfigure, &configSize);
             GetCommState(m_handle, &(m_comConfigure.dcb));
@@ -155,14 +157,19 @@ bool CSerialPortWinBase::openPort()
                 // can also terminate pending read or write operations on the resource.
                 PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
 
+                // save original comm timeouts
+                GetCommTimeouts(m_handle, &m_originalTimeout);
+
                 // init event driven approach
                 if (m_operateMode == itas109::/*OperateMode::*/ AsynchronousOperate)
                 {
                     m_comTimeout.ReadIntervalTimeout = MAXDWORD;
                     m_comTimeout.ReadTotalTimeoutMultiplier = 0;
                     m_comTimeout.ReadTotalTimeoutConstant = 0;
-                    m_comTimeout.WriteTotalTimeoutMultiplier = 0;
-                    m_comTimeout.WriteTotalTimeoutConstant = 0;
+
+                    // ms: TotalTimeout = TimeoutMultiplier * bytesCountOfWrite + TimeoutConstant
+                    m_comTimeout.WriteTotalTimeoutMultiplier = 10;
+                    m_comTimeout.WriteTotalTimeoutConstant = 50;
                     SetCommTimeouts(m_handle, &m_comTimeout);
 
                     // set comm event
@@ -259,6 +266,9 @@ void CSerialPortWinBase::closePort()
             // Discards all characters from the output or input buffer of a specified communications resource. It can
             // also terminate pending read or write operations on the resource.
             PurgeComm(m_handle, PURGE_TXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR | PURGE_RXABORT);
+
+            // restore original comm timeouts
+            SetCommTimeouts(m_handle, &m_originalTimeout);
 
             CloseHandle(m_handle);
             m_handle = INVALID_HANDLE_VALUE;
@@ -549,10 +559,15 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
                 }
                 else
                 {
+                    // WriteFile returned immediately
+                    if (dRet != maxSize) // write timeout
+                    {
+                        lastError = itas109::/*SerialPortError::*/TimeoutError;
+                    }
                     // write ok
                 }
             }
-
+#if 0
             if (!bWrite)
             {
                 // bWrite = TRUE;
@@ -569,6 +584,48 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
                 lastError = itas109::/*SerialPortError::*/ WriteError;
                 dRet = (DWORD)-1;
             }
+#else
+            if (!bWrite) {
+                DWORD object = WaitForSingleObject(m_overlapWrite.hEvent, INFINITE);
+                switch (object)
+                {
+                    case WAIT_OBJECT_0: // Overlap has a signal
+                    {
+                        DWORD dwError;
+                        if (!GetOverlappedResult(m_handle, &m_overlapWrite, &dRet, FALSE))
+                        {                            
+                            COMSTAT comStat;
+                            ClearCommError(m_handle, &dwError, &comStat);
+
+                            lastError = itas109::/*SerialPortError::*/ WriteError;
+                            dRet = (DWORD)-1;
+                        }
+                        else
+                        {
+                            dwError = GetLastError();
+                            if (dRet != maxSize) // write timeout
+                            {
+                                lastError = itas109::/*SerialPortError::*/TimeoutError;
+                            }
+                            // write ok
+                        }
+                    }
+                    break;
+
+                    case WAIT_TIMEOUT:
+                        lastError = itas109::/*SerialPortError::*/TimeoutError;
+                    break;
+
+                    case WAIT_FAILED:
+                    default: // WaitForSingleObject has a error
+                        lastError = itas109::/*SerialPortError::*/ WriteError;
+                        dRet = (DWORD)-1;
+                    break;
+                }
+            }
+#endif
+
+            CloseHandle(m_overlapWrite.hEvent);
         }
         else
         {
@@ -587,7 +644,7 @@ int CSerialPortWinBase::writeData(const char *data, int maxSize)
         lastError = itas109::/*SerialPortError::*/ NotOpenError;
         dRet = (DWORD)-1;
     }
-
+    
     unlock();
 
     return dRet;
